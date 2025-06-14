@@ -24,8 +24,6 @@ def evaluate_model(X_train, y_train, X_test, y_test, models,parameters):
         for i in range(len(list(models))):
             model_name = list(models.keys())[i]
             model = list(models.values())[i]
-
-            # ✅ Correct: Get parameters for the specific model
             model_params = parameters[model_name]
 
             gs = GridSearchCV(estimator=model, param_grid=model_params, cv=3)
@@ -41,5 +39,12 @@ def evaluate_model(X_train, y_train, X_test, y_test, models,parameters):
             report[model_name] = test_model_score
         return report
 
+    except Exception as e:
+        raise CustomException(e, sys)
+    
+def load_object(file_path):
+    try:
+        with open(file_path, 'rb') as file_obj:
+            return dill.load(file_obj)
     except Exception as e:
         raise CustomException(e, sys)
