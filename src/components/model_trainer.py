@@ -38,20 +38,33 @@ class ModelTrainer:
             )
 
             models = {
-                "RandomForestRegressor": RandomForestRegressor(),
-                "GradientBoostingRegressor": GradientBoostingRegressor(),
-                "AdaBoostRegressor": AdaBoostRegressor(),
                 "LinearRegression": LinearRegression(),
                 "Lasso": Lasso(),
                 "Ridge": Ridge(),
-                "SVR": SVR(),
                 "KNeighborsRegressor": KNeighborsRegressor(),
                 "DecisionTreeRegressor": DecisionTreeRegressor(),
-                "XGBRegressor": XGBRegressor(eval_metric="rmse"),
+                "RandomForestRegressor": RandomForestRegressor(),
+                "GradientBoostingRegressor": GradientBoostingRegressor(),
+                "AdaBoostRegressor": AdaBoostRegressor(),
+                "XGBRegressor": XGBRegressor(),
                 "CatBoostRegressor": CatBoostRegressor(verbose=0),
+                "SVR": SVR()
             }
-
-            model_report:dict = evaluate_model(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models)
+            parameters = {
+                "LinearRegression": {},
+                "Lasso": {"alpha": [0.1, 0.5, 1.0]},
+                "Ridge": {"alpha": [0.1, 0.5, 1.0]},
+                "KNeighborsRegressor": {"n_neighbors": [3, 5, 7]},
+                "DecisionTreeRegressor": {"max_depth": [None, 10, 20]},
+                "RandomForestRegressor": {"n_estimators": [50, 100], "max_depth": [None, 10, 20]},
+                "GradientBoostingRegressor": {"n_estimators": [50, 100], "learning_rate": [0.01, 0.1]},
+                "AdaBoostRegressor": {"n_estimators": [50, 100], "learning_rate": [0.01, 0.1]},
+                "XGBRegressor": {"n_estimators": [50, 100], "learning_rate": [0.01, 0.1]},
+                "CatBoostRegressor": {"depth": [6, 8], "learning_rate": [0.01, 0.1]},
+                "SVR": {"kernel": ["linear", "rbf"], "C": [1.0, 10.0]}
+            }
+            logging.info("Initiating model training")
+            model_report:dict = evaluate_model(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models,parameters=parameters)
             best_model_score = max(sorted(model_report.values()))
             best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
             best_model = models[best_model_name]
